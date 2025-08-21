@@ -43,6 +43,8 @@ dev_dependencies:
   sqflite: ^2.3.3
   path_provider: ^2.0.12
   share_plus: ^10.0.0
+  image_picker: ^1.1.0
+  file_picker: ^8.0.5
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

@@ -12,12 +12,25 @@ class LedgerExporter {
     final List<Ledger> tx = await db.getLedgerByDate(date);
     final totals = await db.getTotalsByDate(date);
 
+    final parsedDate = DateFormat('dd/MM/yyyy').parse(date);
+
+    // Then format to yyyy-MM-dd
+    String d= DateFormat('yyyy-MM-dd').format(parsedDate);
+    final data = await new DatabaseHelper().getOpeningBalanceByDate(d);
+
+    double openingbalance=data["amount"];
+
+   double b= (totals['balance'] as num?)?.toDouble() ?? 0.0;
+   double finalbalance=openingbalance+b;
+
     final content = _buildTextReport(
       title: 'Ledger Report (Date: $date)',
       transactions: tx,
       income: (totals['income'] as num?)?.toDouble() ?? 0.0,
       expense: (totals['expense'] as num?)?.toDouble() ?? 0.0,
       balance: (totals['balance'] as num?)?.toDouble() ?? 0.0,
+      openingbalance: openingbalance,
+      finalbalance: finalbalance
     );
 
     return _writeAndReturnFile(
@@ -53,12 +66,28 @@ class LedgerExporter {
     final expense = (expenseQ.first['total'] as num?)?.toDouble() ?? 0.0;
     final balance = income - expense;
 
+    final parsedDatefrom = DateFormat('dd/MM/yyyy').parse(from);
+    final parsedDateTo = DateFormat('dd/MM/yyyy').parse(to);
+
+    // Then format to yyyy-MM-dd
+    String dfrom= DateFormat('yyyy-MM-dd').format(parsedDatefrom);
+    String dTo= DateFormat('yyyy-MM-dd').format(parsedDateTo);
+
+    final data = await new DatabaseHelper().getSumOfOpeningBalance(dfrom,dTo);
+
+
+
+    double b= balance;
+    double finalbalance=data+b;
+
     final content = _buildTextReport(
       title: 'Ledger Report (Range: $from → $to)',
       transactions: tx,
       income: income,
       expense: expense,
       balance: balance,
+      openingbalance: data,
+      finalbalance: finalbalance
     );
 
     return _writeAndReturnFile(
@@ -73,6 +102,9 @@ class LedgerExporter {
     required double income,
     required double expense,
     required double balance,
+    required double openingbalance,
+    required double finalbalance
+
   }) {
     final now = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
 
@@ -84,6 +116,8 @@ class LedgerExporter {
       ..writeln('  Income : ₹ ${income.toStringAsFixed(2)}')
       ..writeln('  Expense: ₹ ${expense.toStringAsFixed(2)}')
       ..writeln('  Balance: ₹ ${balance.toStringAsFixed(2)}')
+      ..writeln('  Opening Balance: ₹ ${openingbalance.toStringAsFixed(2)}')
+      ..writeln('  Final Balance: ₹ ${finalbalance.toStringAsFixed(2)}')
       ..writeln('-' * 60)
       ..writeln('Transactions')
       ..writeln('  (date)  (type)     (amount)    description')

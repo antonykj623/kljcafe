@@ -13,10 +13,23 @@ class LedgerScreen extends StatefulWidget {
 class _LedgerScreenState extends State<LedgerScreen> {
   List<Ledger> ledgerList = [];
   String selectedDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
-
+  Map<String,dynamic> _balances = {};
   @override
   void initState() {
     super.initState();
+    _fetchBalances();
+
+  }
+
+  Future<void> _fetchBalances() async {
+    final parsedDate = DateFormat('dd/MM/yyyy').parse(selectedDate);
+
+    // Then format to yyyy-MM-dd
+    String d= DateFormat('yyyy-MM-dd').format(parsedDate);
+    final data = await new DatabaseHelper().getOpeningBalanceByDate(d);
+    setState(() {
+      _balances = data;
+    });
     _loadLedger();
   }
 
@@ -39,7 +52,7 @@ class _LedgerScreenState extends State<LedgerScreen> {
       setState(() {
         selectedDate = DateFormat('dd/MM/yyyy').format(pickedDate);
       });
-      _loadLedger();
+      _fetchBalances();
     }
   }
 
@@ -59,6 +72,12 @@ class _LedgerScreenState extends State<LedgerScreen> {
           ? Center(child: Text("No transactions for $selectedDate"))
           : Column(
         children: [
+          Center(child: Text(" opening balance : "+_balances["amount"].toString())),
+          SizedBox(height: 10,),
+
+
+
+
           Expanded(child:ListView.builder(
             itemCount: ledgerList.length,
             itemBuilder: (context, index) {

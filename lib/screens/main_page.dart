@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:kljcafe/screens/addEmployee.dart';
+import 'package:kljcafe/screens/addOpeningBalance.dart';
 import 'package:kljcafe/screens/expense_screen.dart';
 import 'package:kljcafe/screens/income_screen.dart';
 import 'package:intl/intl.dart';
@@ -16,6 +18,20 @@ class _DashboardPageState extends State<DashboardPage> {
   double income = 0;
   double expense = 0;
   double ledgerBalance = 0;
+  List<String> months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ];
 
   DateTime? _selectedDate;
 
@@ -109,7 +125,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   Text(
                     _selectedDate == null
                         ? "No date selected"
-                        : "${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}",
+                        : "${months[_selectedDate!.month-1]}/${_selectedDate!.year}",
                     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   ),
                 ],
@@ -123,14 +139,30 @@ class _DashboardPageState extends State<DashboardPage> {
             SizedBox(height: 10,),
             Row(
               children: [
-                Expanded(child: _buildCard("Income", income, Colors.green)),
+                Expanded(child: _buildCard("Income\n(വരുമാനം)", income, Colors.green)),
                 const SizedBox(width: 12),
-                Expanded(child: _buildCard("Expense", expense, Colors.red)),
+                Expanded(child: _buildCard("Expense\n(ചെലവ്)", expense, Colors.red)),
+              ],
+            ),
+            SizedBox(height: 10,),
+            Row(
+              children: [
+                Expanded(child: _buildCard("Opening Balance\n(ഓപ്പണിംഗ് ബാലൻസ്)", income, Colors.green)),
+                const SizedBox(width: 12),
+                Expanded(child: _buildCard("Employees\n(ജീവനക്കാർ)", expense, Colors.green)),
               ],
             ),
             const SizedBox(height: 12),
-            _buildCard("Ledger Balance", ledgerBalance, Colors.blue),
-            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(child: _buildCard("Employee Salary \n(ശമ്പളം)", income, Colors.red)),
+                const SizedBox(width: 12),
+                Expanded(child: _buildCard("Ledger Balance\n(ലെഡ്ജർ ബാലൻസ്)", ledgerBalance, Colors.blue)),
+              ],
+            ),
+            SizedBox(height: 20,),
+
+
 
             // Ledger List Section
 
@@ -156,17 +188,17 @@ class _DashboardPageState extends State<DashboardPage> {
                 style: TextStyle(
                     fontSize: 16, fontWeight: FontWeight.bold, color: color),
               ),
-              const SizedBox(height: 8),
-              Text(
+               SizedBox(height: 8),
+              (title.contains("Ledger Balance")||title.contains("Expense")||title.contains("Income"))?  Text(
                 "₹ ${amount.toStringAsFixed(2)}",
                 style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-              ),
+              ):Container(),
             ],
           ),
         ),
       ) ,
       onTap: () async {
-        if(title.compareTo("Income")==0)
+        if(title.contains("Income"))
           {
 
             final result = await Navigator.push(
@@ -181,7 +213,7 @@ class _DashboardPageState extends State<DashboardPage> {
             }
 
           }
-        else  if(title.compareTo("Expense")==0)
+        else  if(title.contains("Expense"))
         {
 
           final result = await Navigator.push(
@@ -194,8 +226,11 @@ class _DashboardPageState extends State<DashboardPage> {
             getDataByDate();
 
           }
+
+
+
         }
-        else{
+        else if (title.contains("Ledger Balance")){
 
 
           final result = await Navigator.push(
@@ -210,6 +245,35 @@ class _DashboardPageState extends State<DashboardPage> {
           }
 
         }
+
+        else if(title.contains("Employees"))
+          {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => EmployeeScreen()),
+            );
+            if (result != null||result==null) {
+
+              getDataByDate();
+
+            }
+
+          }
+
+        else if(title.contains("Opening Balance"))
+          {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => OpeningBalanceScreen()),
+            );
+            if (result != null||result==null) {
+
+              getDataByDate();
+
+            }
+
+
+          }
       },
     )
 

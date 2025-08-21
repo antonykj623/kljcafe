@@ -45,5 +45,10 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+    <string>We need to access the camera to take employee photos.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>We need to access the photo library to select employee photos.</string>
+
 </dict>
 </plist>

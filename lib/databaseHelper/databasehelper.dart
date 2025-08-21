@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
+import '../model/Employee.dart';
 import '../model/ledger.dart';
 
 class DatabaseHelper {
@@ -35,9 +36,155 @@ class DatabaseHelper {
             description TEXT
           )
         ''');
+        await db.execute('''
+       CREATE TABLE opening_balance (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  date TEXT,
+  amount REAL
+);
+        ''');
+        await db.execute('''
+  CREATE TABLE employees (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    age INTEGER,
+    photo TEXT,
+    address TEXT,
+    phone TEXT,
+    documents TEXT,
+    joiningDate TEXT
+  )
+''');
       },
     );
   }
+
+  // Get SUM of opening balance between two dates (inclusive)
+  Future<double> getSumOfOpeningBalance(String fromDate, String toDate) async {
+    final dbClient = await db;
+    final result = await dbClient.rawQuery(
+      '''
+    SELECT SUM(amount) as total 
+    FROM opening_balance
+    WHERE date BETWEEN ? AND ?
+    ''',
+      [fromDate, toDate],
+    );
+
+    if (result.isNotEmpty) {
+      return (result.first['total'] as num?)?.toDouble() ?? 0.0;
+    }
+    return 0.0;
+  }
+
+
+  //opening balance methodes
+   Future<int> insertOpeningBalance(String date, double amount) async {
+     final dbClient = await db;
+    return await dbClient.insert("opening_balance", {
+      "date": date,
+      "amount": amount,
+    });
+  }
+
+  /// 🔹 Get All Opening Balances
+   Future<List<Map<String, dynamic>>> getAllOpeningBalances() async {
+    final dbClient = await db;
+    return await dbClient.query("opening_balance", orderBy: "date ASC");
+  }
+
+  /// 🔹 Get Opening Balance by Date
+   Future<dynamic> getOpeningBalanceByDate(String date) async {
+     final dbClient = await db;
+    final res = await dbClient.query(
+      "opening_balance",
+      where: "date = ?",
+      whereArgs: [date],
+      limit: 1,
+    );
+
+    if (res.isNotEmpty) {
+      return {"amount":res.first["amount"] as double,"id":res.first["id"]};
+    } else {
+      return {"amount":0.0,"id":0};
+    }
+  }
+
+  /// 🔹 Update Opening Balance
+   Future<int> updateOpeningBalance(int id,String date, double amount) async {
+    final dbClient = await db;
+    return await dbClient.update(
+      "opening_balance",
+      {"amount": amount,"date":date},
+      where: "id = ?",
+      whereArgs: [id],
+    );
+  }
+
+  /// 🔹 Delete Opening Balance
+   Future<int> deleteOpeningBalance(int id) async {
+    final dbClient = await db;
+    return await dbClient.delete(
+      "opening_balance",
+      where: "id = ?",
+      whereArgs: [id],
+    );
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  Future<int> insertEmployee(Employee emp) async {
+    final dbClient = await db;
+    return await dbClient.insert("employees", emp.toMap());
+  }
+
+  Future<List<Employee>> getEmployees() async {
+    final dbClient = await db;
+    final res = await dbClient.query("employees", orderBy: "id DESC");
+    return res.map((e) => Employee.fromMap(e)).toList();
+  }
+
+  Future<int> updateEmployee(Employee emp) async {
+    final dbClient = await db;
+    return await dbClient.update(
+      "employees",
+      emp.toMap(),
+      where: "id = ?",
+      whereArgs: [emp.id],
+    );
+  }
+
+  Future<int> deleteEmployee(int id) async {
+    final dbClient = await db;
+    return await dbClient.delete("employees", where: "id = ?", whereArgs: [id]);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
 
   // Insert transaction
   Future<int> insertTransaction(Map<String, dynamic> row) async {
