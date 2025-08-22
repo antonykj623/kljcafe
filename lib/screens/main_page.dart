@@ -5,6 +5,7 @@ import 'package:kljcafe/screens/expense_screen.dart';
 import 'package:kljcafe/screens/income_screen.dart';
 import 'package:intl/intl.dart';
 import '../databaseHelper/databasehelper.dart';
+import 'addEmployeeSalary.dart';
 import 'ledger_screen.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -274,6 +275,21 @@ class _DashboardPageState extends State<DashboardPage> {
 
 
           }
+
+        else if(title.contains("Employee Salary"))
+        {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => EmployeeSalaryPage()),
+          );
+          if (result != null||result==null) {
+
+            getDataByDate();
+
+          }
+
+
+        }
       },
     )
 

@@ -53,11 +53,45 @@ class DatabaseHelper {
     phone TEXT,
     documents TEXT,
     joiningDate TEXT
-  )
+  );
+''');
+
+
+        await db.execute('''
+CREATE TABLE employee_salary (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_id INT NOT NULL,
+    salary DECIMAL(10,2) NOT NULL,
+    salary_date DATE NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    payment_mode  NOT NULL,
+    created_at TEXT NOT NULL
+);
+
 ''');
       },
     );
   }
+
+
+
+  Future<int> insertSalary(Map<String, dynamic> record) async {
+    final db = await DatabaseHelper().db;
+    return await db.insert("employee_salary", record);
+  }
+
+  Future<List<Map<String, dynamic>>> getSalariesByDate(String date) async {
+    final dbClient = await db;
+    return await dbClient.rawQuery('''
+      SELECT es.id, e.name AS employee_name, es.salary, es.amount, es.salary_date, es.payment_mode
+      FROM employee_salary es
+      JOIN employees e ON es.employee_id = e.id
+      WHERE es.salary_date = ?
+      ORDER BY es.salary_date DESC
+    ''', [date]);
+  }
+
+
 
   // Get SUM of opening balance between two dates (inclusive)
   Future<double> getSumOfOpeningBalance(String fromDate, String toDate) async {
