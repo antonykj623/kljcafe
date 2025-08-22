@@ -4,6 +4,7 @@ class Ledger {
   final double amount;
   final String description;
   final String date;
+  final String paymentmode;
 
   Ledger({
     this.id,
@@ -11,6 +12,7 @@ class Ledger {
     required this.amount,
     required this.description,
     required this.date,
+    required this.paymentmode
   });
 
   // Convert DB row → Model
@@ -21,6 +23,7 @@ class Ledger {
       amount: (map['amount'] as num?)?.toDouble() ?? 0.0,
       description: map['description'] ?? '',
       date: map['date'] ?? '',
+      paymentmode: map['payment_mode'] ?? ''
     );
   }
 
@@ -32,6 +35,7 @@ class Ledger {
       'amount': amount,
       'description': description,
       'date': date,
+      'payment_mode':paymentmode
     };
   }
 }

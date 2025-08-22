@@ -25,7 +25,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 3,
       onCreate: (Database db, int version) async {
         await db.execute('''
           CREATE TABLE transactions (
@@ -33,8 +33,8 @@ class DatabaseHelper {
             type TEXT NOT NULL,         -- income or expense
             amount REAL NOT NULL,
             date TEXT NOT NULL,         -- stored as YYYY-MM-DD
-            description TEXT,
-            payment_mode TEXT
+            description TEXT NOT NULL,
+            payment_mode TEXT NOT NULL
           )
         ''');
         await db.execute('''
@@ -70,6 +70,59 @@ CREATE TABLE employee_salary (
 );
 
 ''');
+      },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < newVersion) {
+//           await db.execute('''
+//           CREATE TABLE transactions (
+//             id INTEGER PRIMARY KEY AUTOINCREMENT,
+//             type TEXT NOT NULL,         -- income or expense
+//             amount REAL NOT NULL,
+//             date TEXT NOT NULL,         -- stored as YYYY-MM-DD
+//             description TEXT NOT NULL,
+//             payment_mode TEXT NOT NULL
+//           )
+//         ''');
+        await db.execute('''
+       CREATE TABLE opening_balance (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  date TEXT,
+  amount REAL
+);
+//         ''');
+
+        await db.execute("ALTER TABLE transactions ADD COLUMN payment_mode TEXT");
+
+
+
+
+        await db.execute('''
+  CREATE TABLE employees (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    age INTEGER,
+    photo TEXT,
+    address TEXT,
+    phone TEXT,
+    documents TEXT,
+    joiningDate TEXT
+  );
+''');
+//
+//
+        await db.execute('''
+CREATE TABLE employee_salary (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_id INT NOT NULL,
+    salary DECIMAL(10,2) NOT NULL,
+    salary_date DATE NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    payment_mode  NOT NULL,
+    created_at TEXT NOT NULL
+);
+
+''');
+        }
       },
     );
   }

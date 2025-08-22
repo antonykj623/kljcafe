@@ -120,7 +120,7 @@ class LedgerExporter {
       ..writeln('  Final Balance: ₹ ${finalbalance.toStringAsFixed(2)}')
       ..writeln('-' * 60)
       ..writeln('Transactions')
-      ..writeln('  (date)  (type)     (amount)    description')
+      ..writeln('  (date)  (type)     (amount)    description    payment mode')
       ..writeln('-' * 60);
 
     if (transactions.isEmpty) {
@@ -130,8 +130,9 @@ class LedgerExporter {
         final amt = t.amount.toStringAsFixed(2).padLeft(8);
         final typ = t.type.padRight(8);
         final dat = t.date;
+        final paymentmode=t.paymentmode;
         final desc = (t.description).replaceAll('\n', ' ');
-        buf.writeln('  $dat  $typ  ₹ $amt   $desc');
+        buf.writeln('  $dat  $typ  ₹ $amt   $desc       $paymentmode');
       }
     }
 
