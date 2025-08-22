@@ -17,7 +17,7 @@ class AddExpensePage extends StatefulWidget {
 class _AddExpensePageState extends State<AddExpensePage> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _descController = TextEditingController();
-
+  String _paymentMode = "Cash";
   // today’s date (fixed)
   final String _todayDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
 
@@ -42,6 +42,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
     mp["amount"]=_amountController.text.trim();
     mp["description"]=desc;
     mp["date"]=_todayDate;
+    mp["payment_mode"]=_paymentMode;
     await DatabaseHelper().insertTransaction(mp);
 
     Navigator.pop(context);
@@ -111,6 +112,38 @@ class _AddExpensePageState extends State<AddExpensePage> {
                 prefixIcon: const Icon(Icons.calendar_today),
                 hintText: _todayDate,
               ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                const Text("Payment Mode: "),
+                Expanded(
+                  child: Row(
+                    children: [
+                      Radio<String>(
+                        value: "Cash",
+                        groupValue: _paymentMode,
+                        onChanged: (value) {
+                          setState(() {
+                            _paymentMode = value!;
+                          });
+                        },
+                      ),
+                      const Text("Cash"),
+                      Radio<String>(
+                        value: "Online",
+                        groupValue: _paymentMode,
+                        onChanged: (value) {
+                          setState(() {
+                            _paymentMode = value!;
+                          });
+                        },
+                      ),
+                      const Text("Online"),
+                    ],
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
 

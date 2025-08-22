@@ -33,7 +33,8 @@ class DatabaseHelper {
             type TEXT NOT NULL,         -- income or expense
             amount REAL NOT NULL,
             date TEXT NOT NULL,         -- stored as YYYY-MM-DD
-            description TEXT
+            description TEXT,
+            payment_mode TEXT
           )
         ''');
         await db.execute('''
