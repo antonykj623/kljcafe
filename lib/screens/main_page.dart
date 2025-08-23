@@ -19,6 +19,8 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   double income = 0;
   double expense = 0;
+  double openingbalance=0;
+  Map<String,dynamic> _balances = {};
   double ledgerBalance = 0;
   List<String> months = [
     "January",
@@ -90,6 +92,12 @@ class _DashboardPageState extends State<DashboardPage> {
 
     final String _todayDate = DateFormat('dd/MM/yyyy').format(_selectedDate!);
 
+    final String _dt_openingbalance = DateFormat('yyyy-MM-dd').format(_selectedDate!);
+
+    final data = await new DatabaseHelper().getOpeningBalanceByDate(_dt_openingbalance);
+    setState(() {
+      _balances = data;
+    });
 
     final totals = await DatabaseHelper().getTotalsByDate(_todayDate);
 
@@ -98,7 +106,7 @@ class _DashboardPageState extends State<DashboardPage> {
       expense = (totals['expense'] as num?)?.toDouble() ?? 0.0;
       ledgerBalance = (totals['balance'] as num?)?.toDouble() ?? 0.0;
 
-
+      openingbalance= (_balances["amount"] as num?)?.toDouble() ?? 0.0;
 
     });
 
@@ -165,15 +173,15 @@ class _DashboardPageState extends State<DashboardPage> {
             SizedBox(height: 10,),
             Row(
               children: [
-                Expanded(child: _buildCard("Opening Balance\n(ഓപ്പണിംഗ് ബാലൻസ്)", income, Colors.green)),
+                Expanded(child: _buildCard("Opening Balance\n(ഓപ്പണിംഗ് ബാലൻസ്)", openingbalance, Colors.green)),
                 const SizedBox(width: 12),
-                Expanded(child: _buildCard("Employees\n(ജീവനക്കാർ)", expense, Colors.green)),
+                Expanded(child: _buildCard("Employees\n(ജീവനക്കാർ)\n\n", expense, Colors.green)),
               ],
             ),
             const SizedBox(height: 12),
             Row(
               children: [
-                Expanded(child: _buildCard("Employee Salary \n(ശമ്പളം)", income, Colors.red)),
+                Expanded(child: _buildCard("Employee Salary \n(ശമ്പളം)\n", expense, Colors.red)),
                 const SizedBox(width: 12),
                 Expanded(child: _buildCard("Ledger Balance\n(ലെഡ്ജർ ബാലൻസ്)", ledgerBalance, Colors.blue)),
               ],
@@ -198,8 +206,10 @@ class _DashboardPageState extends State<DashboardPage> {
         elevation: 4,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding:  EdgeInsets.all(16.0),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
                 title,
@@ -207,7 +217,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     fontSize: 16, fontWeight: FontWeight.bold, color: color),
               ),
                SizedBox(height: 8),
-              (title.contains("Ledger Balance")||title.contains("Expense")||title.contains("Income"))?  Text(
+              (title.contains("Ledger Balance")||title.contains("Expense")||title.contains("Income")||title.contains("Opening Balance"))?  Text(
                 "₹ ${amount.toStringAsFixed(2)}",
                 style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
               ):Container(),
