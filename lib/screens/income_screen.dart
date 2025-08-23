@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:kljcafe/screens/incomelist.dart';
 
@@ -25,7 +26,7 @@ class _AddIncomePageState extends State<AddIncomePage> {
     final String amount = _amountController.text.trim();
     final String desc = _descController.text.trim();
 
-    if (amount.isEmpty || desc.isEmpty) {
+    if (amount.isEmpty ) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please fill all fields")),
       );
@@ -62,6 +63,28 @@ class _AddIncomePageState extends State<AddIncomePage> {
 
 
     Navigator.pop(context); // go back after saving
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
+
+  @override
+  void dispose() {
+    // Reset to allow all orientations when leaving this screen
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    super.dispose();
   }
 
   @override

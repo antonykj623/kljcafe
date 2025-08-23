@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:kljcafe/screens/addEmployee.dart';
 import 'package:kljcafe/screens/addOpeningBalance.dart';
 import 'package:kljcafe/screens/expense_screen.dart';
@@ -57,6 +58,10 @@ class _DashboardPageState extends State<DashboardPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
 
     setState(() {
       _selectedDate = DateTime.now();
@@ -66,12 +71,24 @@ class _DashboardPageState extends State<DashboardPage> {
 
   }
 
+  @override
+  void dispose() {
+    // Reset to allow all orientations when leaving this screen
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    super.dispose();
+  }
+
 
 
   getDataByDate()
   async {
 
-    final String _todayDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
+    final String _todayDate = DateFormat('dd/MM/yyyy').format(_selectedDate!);
 
 
     final totals = await DatabaseHelper().getTotalsByDate(_todayDate);
@@ -126,8 +143,8 @@ class _DashboardPageState extends State<DashboardPage> {
                   Text(
                     _selectedDate == null
                         ? "No date selected"
-                        : "${months[_selectedDate!.month-1]}/${_selectedDate!.year}",
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                        : "${_selectedDate!.day}/${months[_selectedDate!.month-1]}/${_selectedDate!.year}",
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),

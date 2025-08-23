@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:kljcafe/databaseHelper/databasehelper.dart';
 
 import '../model/Employee.dart';
@@ -30,8 +31,27 @@ List<Employee> _employees = [
   void initState() {
     // TODO: implement initState
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     _loadEmployees();
   }
+
+
+  @override
+  void dispose() {
+    // Reset to allow all orientations when leaving this screen
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    super.dispose();
+  }
+
+
 
   Future<void> _loadEmployees() async {
     final list = await new DatabaseHelper() .getEmployees();

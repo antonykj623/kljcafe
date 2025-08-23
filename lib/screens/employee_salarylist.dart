@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../databaseHelper/databasehelper.dart';
 import 'package:intl/intl.dart';
 
@@ -18,7 +19,22 @@ class _EmployeeSalaryListPageState extends State<EmployeeSalaryListPage> {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     _loadSalaries();
+  }
+  @override
+  void dispose() {
+    // Reset to allow all orientations when leaving this screen
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    super.dispose();
   }
 
   Future<void> _loadSalaries() async {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import '../databaseHelper/databasehelper.dart';
  // your db helper file
@@ -17,8 +18,26 @@ class _OpeningBalanceScreenState extends State<OpeningBalanceScreenList> {
   @override
   void initState() {
     super.initState();
+
+
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     _dateController.text = DateFormat("yyyy-MM-dd").format(DateTime.now());
     _fetchBalances(); // load for today's date
+  }
+
+  @override
+  void dispose() {
+    // Reset to allow all orientations when leaving this screen
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    super.dispose();
   }
 
   Future<void> _selectDate(BuildContext context) async {
